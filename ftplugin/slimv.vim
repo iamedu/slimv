@@ -89,6 +89,9 @@ function! SlimvSwankCommand()
     if cmd != ''
         if g:slimv_windows || g:slimv_cygwin
             return '!start /MIN ' . cmd
+        elseif $TMUX != ''
+            " tmux under whatever
+            return "! tmux new-window -d -n swank '" . cmd . "'"
         elseif g:slimv_osx
             let result = system('osascript -e "exists application \"iterm\""')
                 if result[:-2] == 'true'
@@ -101,9 +104,6 @@ function! SlimvSwankCommand()
         elseif $STY != ''
             " GNU screen under Linux
             return '! screen -X eval "title swank" "screen ' . cmd . '" "select swank"'
-        elseif $TMUX != ''
-            " tmux under Linux
-            return "! tmux new-window -d -n swank '" . cmd . "'"
         elseif $DISPLAY == ''
             " No X, no terminal multiplexer. Cannot run swank server.
             call SlimvErrorWait( 'No X server. Run Vim from screen/tmux or start SWANK server manually.' )
