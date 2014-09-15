@@ -1,7 +1,7 @@
 " paredit.vim:
 "               Paredit mode for Slimv
 " Version:      0.9.13
-" Last Change:  05 May 2014
+" Last Change:  12 Jul 2014
 " Maintainer:   Tamas Kovacs <kovisoft at gmail dot com>
 " License:      This file is placed in the public domain.
 "               No warranty, express or implied.
@@ -108,18 +108,18 @@ function! PareditInitBuffer()
         inoremap <buffer> <expr>   <BS>         PareditBackspace(0)
         inoremap <buffer> <expr>   <Del>        PareditDel()
         if &ft =~ '.*\(clojure\|scheme\|racket\).*' && g:paredit_smartjump
-            nnoremap <buffer> <silent> (            :<C-U>call PareditSmartJumpOpening(0)<CR>
-            nnoremap <buffer> <silent> )            :<C-U>call PareditSmartJumpClosing(0)<CR>
+            noremap  <buffer> <silent> (            :<C-U>call PareditSmartJumpOpening(0)<CR>
+            noremap  <buffer> <silent> )            :<C-U>call PareditSmartJumpClosing(0)<CR>
             vnoremap <buffer> <silent> (            <Esc>:<C-U>call PareditSmartJumpOpening(1)<CR>
             vnoremap <buffer> <silent> )            <Esc>:<C-U>call PareditSmartJumpClosing(1)<CR>
         else
-            nnoremap <buffer> <silent> (            :<C-U>call PareditFindOpening('(',')',0)<CR>
-            nnoremap <buffer> <silent> )            :<C-U>call PareditFindClosing('(',')',0)<CR>
+            noremap  <buffer> <silent> (            :<C-U>call PareditFindOpening('(',')',0)<CR>
+            noremap  <buffer> <silent> )            :<C-U>call PareditFindClosing('(',')',0)<CR>
             vnoremap <buffer> <silent> (            <Esc>:<C-U>call PareditFindOpening('(',')',1)<CR>
             vnoremap <buffer> <silent> )            <Esc>:<C-U>call PareditFindClosing('(',')',1)<CR>
         endif
-        nnoremap <buffer> <silent> [[           :<C-U>call PareditFindDefunBck()<CR>
-        nnoremap <buffer> <silent> ]]           :<C-U>call PareditFindDefunFwd()<CR>
+        noremap  <buffer> <silent> [[           :<C-U>call PareditFindDefunBck()<CR>
+        noremap  <buffer> <silent> ]]           :<C-U>call PareditFindDefunFwd()<CR>
 
         call RepeatableNNoRemap('x', ':<C-U>call PareditEraseFwd()')
         nnoremap <buffer> <silent> <Del>        :<C-U>call PareditEraseFwd()<CR>
@@ -147,8 +147,8 @@ function! PareditInitBuffer()
         call RepeatableNNoRemap(g:paredit_leader . 'w"', ':<C-U>call PareditWrap('."'".'"'."','".'"'."')")
         execute 'vnoremap <buffer> <silent> ' . g:paredit_leader.'w"  :<C-U>call PareditWrapSelection('."'".'"'."','".'"'."')<CR>"
         " Spliec s-expression killing backward/forward
-        execute 'nmap     <buffer> <silent> ' . g:paredit_leader.'<Up>    d[(,S'
-        execute 'nmap     <buffer> <silent> ' . g:paredit_leader.'<Down>  d])%,S'
+        execute 'nmap     <buffer> <silent> ' . g:paredit_leader.'<Up>    d[(:<C-U>call PareditSplice()<CR>'
+        execute 'nmap     <buffer> <silent> ' . g:paredit_leader.'<Down>  d])%:<C-U>call PareditSplice()<CR>'
         call RepeatableNNoRemap(g:paredit_leader . 'I', ':<C-U>call PareditRaise()')
         if &ft =~ '.*\(clojure\|scheme\|racket\).*'
             inoremap <buffer> <expr>   [            PareditInsertOpening('[',']')
@@ -1027,7 +1027,7 @@ endfunction
 function! s:EraseFwd( count, startcol )
     let line = getline( '.' )
     let pos = col( '.' ) - 1
-    let reg = getreg( &clipboard == 'unnamed' ? '*' : '"' )
+    let reg = ''
     let ve_save = &virtualedit
     set virtualedit=all
     let c = a:count
@@ -1079,7 +1079,7 @@ endfunction
 function! s:EraseBck( count )
     let line = getline( '.' )
     let pos = col( '.' ) - 1
-    let reg = getreg( &clipboard == 'unnamed' ? '*' : '"' )
+    let reg = ''
     let c = a:count
     while c > 0 && pos > 0
         if pos > 1 && line[pos-2] == '\' && line[pos-1] =~ b:any_matched_char && (pos < 3 || line[pos-3] != '\')
