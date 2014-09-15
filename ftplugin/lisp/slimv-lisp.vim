@@ -47,6 +47,7 @@ let s:lisp_desc = [
 \ [ 'alisp',        'allegro',   '',    '' ],
 \ [ 'alisp8',       'allegro',   '',    '' ],
 \ [ 'lwl',          'lispworks', '',    '' ],
+\ [ 'ccl64',        'clozure',   '',    '' ],
 \ [ 'ccl',          'clozure',   '',    '' ],
 \ [ 'wx86cl64',     'clozure',   'w64', '' ],
 \ [ 'wx86cl',       'clozure',   'w',   '' ],
