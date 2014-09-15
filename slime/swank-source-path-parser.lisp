@@ -43,12 +43,13 @@
   "Return a macro character function that does the same as FN, but
 additionally stores the result together with the stream positions
 before and after of calling FN in the hashtable SOURCE-MAP."
-  (declare (type function fn))
   (lambda (stream char)
     (let ((start (1- (file-position stream)))
 	  (values (multiple-value-list (funcall fn stream char)))
 	  (end (file-position stream)))
-      ;(format t "[~D \"~{~A~^, ~}\" ~D ~D ~S]~%" start values end (char-code char) char)
+      #+(or)
+      (format t "[~D \"~{~A~^, ~}\" ~D ~D ~S]~%" 
+	      start values end (char-code char) char)
       (unless (null values)
 	(push (cons start end) (gethash (car values) source-map)))
       (values-list values))))
